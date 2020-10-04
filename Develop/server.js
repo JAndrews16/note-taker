@@ -13,15 +13,6 @@ app.use(express.json());
 app.use(express.static(__dirname + '/public'));
 
 const notepadAr = require("./db/db.json");
-// const notesAr = fs.readFile(JSON.parse(notepadAr), 'utf8', function(err, data) {
-//     if(err) throw err;
-// });
-
-// fs.readFile('readMe.txt', 'utf8', function (err, data) {
-//     fs.writeFile('writeMe.txt', data, function(err, result) {
-//        if(err) console.log('error', err);
-//      });
-//    });
 
 app.listen(PORT, function() {
     console.log("App listening on PORT " + PORT);
@@ -46,17 +37,31 @@ app.get("/api/notes", function(req, res) {
 app.post("/api/notes", function(req, res) {
   var newNote = req.body;
 
-  newNote.id = notepadAr.length;
-
-  console.log(notepadAr.length);
-  console.log(newNote);
-  
+  newNote.id = notepadAr.length;  
   notepadAr.push(newNote);
-  console.log(notepadAr);
+  //console.log(notepadAr);
 
-//   fs.writeFile(notepadAr, notesAr, function(err, result) {
-//       if(err) throw err;
-//   });
-
+  fs.writeFileSync("./db/db.json", JSON.stringify(notepadAr));
   res.json(newNote);
 });
+
+app.delete("/api/notes/:id", function(req, res) {
+    let i = parseInt(req.params.id);
+    //console.log(i);
+
+    notepadAr.splice(i, 1);
+
+    //Resync the note id values to match with array index
+    for(let j = 0 ; j < notepadAr.length; j++) {
+        notepadAr[j].id = j;
+    }
+
+    fs.writeFileSync("./db/db.json", JSON.stringify(notepadAr));
+    //console.log(notepadAr);
+
+    res.json(notepadAr);
+});
+
+app.get("*", function(req, res) {
+    res.redirect("/");
+}); 
