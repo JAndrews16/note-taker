@@ -1,53 +1,62 @@
-const fs = require("fs");
 const express = require("express");
 const path = require("path");
+const fs = require("fs");
 
+// Set up the Express App
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = 3000;
+
+// Set up the Express app to handle data parsing
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use(express.static(__dirname + '/public'));
+
+const notepadAr = require("./db/db.json");
+// const notesAr = fs.readFile(JSON.parse(notepadAr), 'utf8', function(err, data) {
+//     if(err) throw err;
+// });
+
+// fs.readFile('readMe.txt', 'utf8', function (err, data) {
+//     fs.writeFile('writeMe.txt', data, function(err, result) {
+//        if(err) console.log('error', err);
+//      });
+//    });
 
 app.listen(PORT, function() {
     console.log("App listening on PORT " + PORT);
 });
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-const notepadAr = require("./db/db.json");
-let noteId = 0;
-
+// Routes
 app.get("/", function(req, res) {
-    res.sendFile(path.join(__dirname, "/public/index.html"));
+  res.sendFile(path.join(__dirname, "/public/index.html"));
 });
-  
+
 app.get("/notes", function(req, res) {
-    res.sendFile(path.join(__dirname, "/public/notes.html"));
+  res.sendFile(path.join(__dirname, "/public/notes.html"));
 });
 
+// Displays all notes
 app.get("/api/notes", function(req, res) {
-    let notes = fs.readFile("./db/db.json");
-    return res.json(JSON.parse(notes));
-})
-
-app.post("/api/notes", function(req, res) {
-    var newNote = req.body;
-    noteId++;
-  
-    notepadAr.push(newNote);
-    req.body.id = noteId;
-    res.json(newNote);
-  });
-
-  app.delete("/api/notes/:id", function(req, res) {
-    let noteId = req.params.id;
-    let idInt = parseInt(noteId);
-
-    if(item.id = idInt) {
-    let deletedNote = notepadAr.filter(item.id);
-    
-    notepadAr.pop(deletedNote);
-    }
+  return res.json(notepadAr);
 });
 
-app.get("*", function(req, res) {
-    res.redirect("/");
+
+// Create New Notes - takes in JSON input
+app.post("/api/notes", function(req, res) {
+  var newNote = req.body;
+
+  newNote.id = notepadAr.length;
+
+  console.log(notepadAr.length);
+  console.log(newNote);
+  
+  notepadAr.push(newNote);
+  console.log(notepadAr);
+
+//   fs.writeFile(notepadAr, notesAr, function(err, result) {
+//       if(err) throw err;
+//   });
+
+  res.json(newNote);
 });
