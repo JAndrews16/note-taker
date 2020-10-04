@@ -3,7 +3,7 @@
 ## Description
 This application allows users to write, save, and delete notes. Using express on the backend, this application will provide the user with a convenient way to save notes through data retreival from a JSON file.
 
-![Application Demo](./Develop/public/assets/demo/demo.gif)
+![Application Demo](./public/assets/demo/demo.gif)
 
 ## Table of Contents
 - [Installation](#Installation)
